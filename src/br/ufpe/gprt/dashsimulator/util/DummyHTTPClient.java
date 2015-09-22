@@ -43,6 +43,7 @@ public class DummyHTTPClient {
 		
         int numBytesJustRead;
 		while((numBytesJustRead = socks.getInputStream().read(buffer)) != -1) {
+			System.out.println("Bytes read were "+numBytesJustRead);
             baos.write(buffer, 0, numBytesJustRead);
         }
 		

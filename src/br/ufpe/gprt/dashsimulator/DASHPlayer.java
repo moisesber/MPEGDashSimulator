@@ -13,15 +13,15 @@ public class DASHPlayer implements Runnable{
 	private DASHAdaptationLogic logic;
 	private DummyHTTPClient httpClient;
 
-	public DASHPlayer(String baseURL, String host, int port){
-		this.baseURL = baseURL;
-		this.host = host;
-		this.port = port;
+	public DASHPlayer(){
+		this.mpd = new MPDRepresentation();
+		this.baseURL = this.mpd.getBaseURL();
+		this.host = this.mpd.getHost();
+		this.port = this.mpd.getPort();
 	}
 
 	@Override
 	public void run() {
-		this.mpd = new MPDRepresentation(baseURL);
 		this.logic = new DASHAdaptationLogic(this.mpd.getBitrates());
 		this.httpClient = new DummyHTTPClient(host, port);
 		int numberOfSegmentsDownloaded = 1;

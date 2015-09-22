@@ -18,10 +18,15 @@ public class MPDRepresentation {
 	private final static String NUMBER_OF_SEGMENTS = "NumberOfSegments";
 	private final static String BITRATES_AVAILABLE = "Bitrates";
 	private final static String SEGMENT_SIZE = "SegmentSize";
+	
+	private String host;
+	private int port;
 
-	public MPDRepresentation(String baseURL){
-		this.baseURL = baseURL;
-		this.currentSegmentId = 1;
+	private final static String BASE_URL = "BaseURL";
+	private final static String HOST_STRING = "Host";
+	private final static String PORT_STRING = "Port";
+
+	public MPDRepresentation(){
 		
 		FileInputStream fileInput;
 		try {
@@ -33,6 +38,13 @@ public class MPDRepresentation {
 				throw new Exception("Properties "+NUMBER_OF_SEGMENTS+", "+BITRATES_AVAILABLE+", and "+SEGMENT_SIZE+" have to be defined in properties file.");
 			}
 			
+			//Default values
+			this.baseURL = props.containsKey(BASE_URL)? props.getProperty(BASE_URL) : "/ftp/datasets/mmsys12/BigBuckBunny/";
+			this.host = props.containsKey(HOST_STRING)? props.getProperty(HOST_STRING) : "www-itec.uni-klu.ac.at";
+			this.port = props.containsKey(PORT_STRING)? Integer.parseInt(props.getProperty(PORT_STRING).trim()) : 80;
+			
+			
+			this.currentSegmentId = 1;
 			this.numberOfSegments = Integer.parseInt(props.getProperty(NUMBER_OF_SEGMENTS));
 			this.representation = props.getProperty(SEGMENT_SIZE);
 			this.bitrates = this.getBitrateFromProperties(props.getProperty(BITRATES_AVAILABLE));
@@ -46,6 +58,18 @@ public class MPDRepresentation {
 
 	}
 	
+	public String getBaseURL() {
+		return baseURL;
+	}
+
+	public String getHost() {
+		return host;
+	}
+
+	public int getPort() {
+		return port;
+	}
+
 	private List<Integer> getBitrateFromProperties(String property) {
 		StringTokenizer tokens = new StringTokenizer(property,",");
 		

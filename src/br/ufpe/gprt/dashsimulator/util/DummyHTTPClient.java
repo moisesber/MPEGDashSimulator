@@ -35,6 +35,7 @@ public class DummyHTTPClient {
 		
 		data.createNewFile();
 		URL website = new URL("http://"+host+":"+port+url);
+		this.bitrateCalculator.startTrackingSegment(id);
 		ReadableByteChannel rbc = Channels.newChannel(website.openStream());
 		FileOutputStream fos = new FileOutputStream(data);
 		fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);

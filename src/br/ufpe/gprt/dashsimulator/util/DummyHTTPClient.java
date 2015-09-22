@@ -34,13 +34,16 @@ public class DummyHTTPClient {
 		}
 		
 		data.createNewFile();
-		URL website = new URL("http://"+host+":"+port+url);
+		String siteAddress = "http://"+host+":"+port+url;
 		this.bitrateCalculator.startTrackingSegment(id);
+
+		URL website = new URL(siteAddress);
 		ReadableByteChannel rbc = Channels.newChannel(website.openStream());
 		FileOutputStream fos = new FileOutputStream(data);
 		fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
 		
-		this.downloadedSizeInBytes = data.getTotalSpace();
+//		this.downloadedSizeInBytes = data.getTotalSpace();
+		this.downloadedSizeInBytes = data.length();
 		
 //        String request = "GET "+url+"?tag=java HTTP/1.1 \n"
 //        		+ "host: " + host +"\n"

@@ -25,7 +25,7 @@ public class DASHAdaptationLogic {
 		}
 		
 		this.lowestRepresentation = this.bitrates.get(0);
-		this.currentRepresentation = this.bitrates.get(3);
+		this.currentRepresentation = this.bitrates.get(0);
 	}
 	
 	public boolean switchRepresentation(int calculatedBitrate){
@@ -34,9 +34,9 @@ public class DASHAdaptationLogic {
 		int chosenOne = this.lowestRepresentation;
 		for (int availableBitrate : bitrates) {
 			
-			System.out.println("Calc = "+calculatedBitrate);
-			System.out.println("Chosenone = "+chosenOne);
-			System.out.println("Available bitrate = "+availableBitrate);
+//			System.out.println("Calc = "+calculatedBitrate);
+//			System.out.println("Chosenone = "+chosenOne);
+//			System.out.println("Available bitrate = "+availableBitrate);
 			if(availableBitrate < calculatedBitrate && chosenOne <= availableBitrate){
 				chosenOne = availableBitrate;
 			}

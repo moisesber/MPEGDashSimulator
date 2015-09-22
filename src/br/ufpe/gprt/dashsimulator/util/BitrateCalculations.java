@@ -16,7 +16,7 @@ public class BitrateCalculations {
 		this.initialTimes.put(id, System.currentTimeMillis());
 	}
 	
-	public int stopTrackingAndCalculateBitrate(int id, int dataLengthInBytes){
+	public int stopTrackingAndCalculateBitrate(int id, long dataLengthInBytes){
 		long currentTime = System.currentTimeMillis();
 		if(!this.initialTimes.containsKey(id)){
 			System.out.println("Trying to calculate bitrate of a segment not tracked.");

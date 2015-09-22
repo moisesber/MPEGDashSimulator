@@ -1,13 +1,14 @@
 package br.ufpe.gprt.dashsimulator.util;
 
-import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.URL;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 
 public class DummyHTTPClient {
 
@@ -16,7 +17,7 @@ public class DummyHTTPClient {
 	private int port;
 	private int destinationPort;
 	private BitrateCalculations bitrateCalculator;
-	private int downloadedSizeInBytes;
+	private long downloadedSizeInBytes;
 	
 	public DummyHTTPClient(String host, int port){
 		this.host = host;
@@ -26,35 +27,50 @@ public class DummyHTTPClient {
 
 	public int requestSegment(String url, int id) throws IOException {
 		
-        String request = "GET "+url+"?tag=java HTTP/1.1 \n"
-        		+ "host: " + host +"\n"
-        		+ "User-Agent: dummyclient/0.1\n\n";
-		this.connect();
+		File data = new File("receivedData");
 		
-		BufferedWriter out = new BufferedWriter(new OutputStreamWriter(this.socks.getOutputStream()));
-		out.write(request);
-		out.flush();
-		this.bitrateCalculator.startTrackingSegment(id);
-//		BufferedReader in = new BufferedReader(new InputStreamReader(socks.getInputStream()));
-		InputStreamReader in = new InputStreamReader(socks.getInputStream());
+		if(data.exists()){
+			data.delete();
+		}
 		
-		byte[] buffer = new byte[4096 * 2];
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		data.createNewFile();
+		URL website = new URL("http://"+host+":"+port+url);
+		ReadableByteChannel rbc = Channels.newChannel(website.openStream());
+		FileOutputStream fos = new FileOutputStream(data);
+		fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
 		
-        int numBytesJustRead;
-		while((numBytesJustRead = socks.getInputStream().read(buffer)) != -1) {
-			System.out.println("Bytes read were "+numBytesJustRead);
-            baos.write(buffer, 0, numBytesJustRead);
-        }
+		this.downloadedSizeInBytes = data.getTotalSpace();
 		
-		downloadedSizeInBytes = baos.size();
-
+//        String request = "GET "+url+"?tag=java HTTP/1.1 \n"
+//        		+ "host: " + host +"\n"
+//        		+ "User-Agent: dummyclient/0.1\n\n";
+//		this.connect();
+//		
+//		BufferedWriter out = new BufferedWriter(new OutputStreamWriter(this.socks.getOutputStream()));
+//		out.write(request);
+//		out.flush();
+//		this.bitrateCalculator.startTrackingSegment(id);
+////		BufferedReader in = new BufferedReader(new InputStreamReader(socks.getInputStream()));
+//		InputStreamReader in = new InputStreamReader(socks.getInputStream());
+//		
+//		byte[] buffer = new byte[4096 * 2];
+//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//		
+//        int numBytesJustRead;
+//		while((numBytesJustRead = socks.getInputStream().read(buffer)) != -1) {
+//            baos.write(buffer, 0, numBytesJustRead);
+//        }
+//		
+//		downloadedSizeInBytes = baos.size();
+//		this.disconnect();
+		
+		
 		int bitrate = this.bitrateCalculator.stopTrackingAndCalculateBitrate(id, this.getDownloadedSizeInBytes());
-		this.disconnect();
+		
 		return bitrate;
 	}
 	
-	public int getDownloadedSizeInBytes() {
+	public long getDownloadedSizeInBytes() {
 		return downloadedSizeInBytes;
 	}
 

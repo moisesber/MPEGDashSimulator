@@ -37,7 +37,7 @@ public class DASHPlayer implements Runnable{
 				System.out.println("Requesting segment "+segmentURL+" currentBitrate = "+currentBitRate+" Up="+bitrateUp+" Down="+bitrateDown);
 				int calculatedBitrate = this.httpClient.requestSegment(segmentURL, numberOfSegmentsDownloaded);
 				
-				int downloadTime = calculatedBitrate == 0 ? -1 : ((this.httpClient.getDownloadedSizeInBytes()* 8) / calculatedBitrate);
+				int downloadTime = (int) (calculatedBitrate == 0 ? -1 : ((this.httpClient.getDownloadedSizeInBytes()* 8) / calculatedBitrate));
 				System.out.println("Bitrate calculated was "+calculatedBitrate+" total bytes downloaded were "+this.httpClient.getDownloadedSizeInBytes()+ " time was "+downloadTime );
 				if(this.logic.switchRepresentation(calculatedBitrate)){
 					int newBitRate = this.logic.getCurrentRepresentation();

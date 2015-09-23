@@ -6,14 +6,17 @@ import java.util.Map;
 public class BitrateCalculations {
 	
 	private Map<Integer, Long> initialTimes;
+	private Map<Integer, Long> downloadTimes;
 
 	public BitrateCalculations(){
 		this.initialTimes = new HashMap<Integer, Long>();
-		
+		this.downloadTimes = new HashMap<Integer, Long>();
 	}
 	
-	public void startTrackingSegment(int id){
-		this.initialTimes.put(id, System.currentTimeMillis());
+	public long startTrackingSegment(int id){
+		long currentTime = System.currentTimeMillis();
+		this.initialTimes.put(id, currentTime);
+		return currentTime;
 	}
 	
 	public int stopTrackingAndCalculateBitrate(int id, long dataLengthInBytes){
@@ -23,16 +26,25 @@ public class BitrateCalculations {
 			return -1;
 		}
 		
-		if(this.initialTimes.containsKey(id) && this.initialTimes.get(id) < 0){
+		if(this.downloadTimes.containsKey(id)){
 			System.out.println("Already calculated bitrate for this segment.");
 			return -2;
 		}
 		
-		int bitrate = ((int)((dataLengthInBytes*8)/ (currentTime - this.initialTimes.get(id)) )) *1000;
+		long downloadTime = (currentTime - this.initialTimes.get(id));
+
+		int bitrate = ((int)((dataLengthInBytes*8)/ downloadTime )) *1000;
 		
 		//Marking the segment as already tracked
-		this.initialTimes.put(id, -1l);
+		this.downloadTimes.put(id, downloadTime);
 		return  bitrate;
 	}
 
+	public long getTotalTimeMilis(int id){
+		return this.downloadTimes.containsKey(id) ? this.downloadTimes.get(id) : -1;
+	}
+
+	public long getStartDownloadTime(int id) {
+		return this.initialTimes.get(id);
+	}
 }

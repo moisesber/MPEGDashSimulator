@@ -3,7 +3,10 @@ package br.ufpe.gprt.dashsimulator.util;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 
@@ -37,16 +40,25 @@ public class DummyHTTPClient {
 		long startTime = this.bitrateCalculator.startTrackingSegment(id);
 
 		URL website = new URL(siteAddress);
-		ReadableByteChannel rbc = Channels.newChannel(website.openStream());
+		URLConnection con = website.openConnection();
+		InputStream in = con.getInputStream();
+//		InputStream in = website.openStream();
+		
+		
+		ReadableByteChannel rbc = Channels.newChannel(in);
 		
 		this.lastConnectionTimeMilis = System.currentTimeMillis() - startTime;
 		
 		FileOutputStream fos = new FileOutputStream(data);
 		fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
 		
+		//Force TCP session end
+		HttpURLConnection httpCon = (HttpURLConnection)con;
+		httpCon.disconnect();
+		
+		
 		this.lastDownloadTimeMilis = System.currentTimeMillis() - startTime - this.lastConnectionTimeMilis;
 		this.downloadedSizeInBytes = data.length();
-		
 		int bitrate = this.bitrateCalculator.stopTrackingAndCalculateBitrate(id, this.getDownloadedSizeInBytes());
 		
 		return bitrate;

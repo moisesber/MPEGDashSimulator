@@ -49,7 +49,7 @@ public class DASHPlayer implements Runnable{
 			String segmentURL = this.mpd.getNextSegment(currentBitRate);
 			try {
 				System.out.println("Requesting segment "+segmentURL+" currentBitrate = "+currentBitRate+" Up="+bitrateUp+" Down="+bitrateDown);
-				int calculatedBitrate = this.httpClient.requestSegment(segmentURL, numberOfSegmentsDownloaded);
+				int calculatedBitrate = this.httpClient.requestSegment(segmentURL, numberOfSegmentsDownloaded,this.playerCount);
 				
 				long downloadTime = this.httpClient.getSegmentTotalTimeMilis(numberOfSegmentsDownloaded);
 				

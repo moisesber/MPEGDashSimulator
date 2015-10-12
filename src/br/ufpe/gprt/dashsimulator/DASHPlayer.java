@@ -84,7 +84,14 @@ public class DASHPlayer implements Runnable{
 				
 				numberOfSegmentsDownloaded++;
 				currentBitRate = this.logic.getCurrentRepresentation();
+				
+				synchronized(this){
+					wait(100);
+				}
 			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}

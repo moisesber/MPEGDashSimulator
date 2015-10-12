@@ -35,7 +35,7 @@ public class DASHPlayer implements Runnable{
 		this.logic = new DASHAdaptationLogic(this.mpd.getBitrates());
 		this.httpClient = new DummyHTTPClient(host, port);
 		Charset charset = Charset.forName("US-ASCII");
-		Path plotLogFile = FileSystems.getDefault().getPath("all.data.dash.player-"+this.playerCount+"-"+System.currentTimeMillis());
+		Path plotLogFile = FileSystems.getDefault().getPath("plotData/all.data.dash.player-"+this.playerCount+"-"+System.currentTimeMillis());
 		NumberFormat formatter = new DecimalFormat("#0.000");		
 				
 		int numberOfSegmentsDownloaded = 1;

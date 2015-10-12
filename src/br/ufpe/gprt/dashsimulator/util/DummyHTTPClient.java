@@ -27,9 +27,9 @@ public class DummyHTTPClient {
 		this.bitrateCalculator = new BitrateCalculations();
 	}
 
-	public int requestSegment(String url, int id) throws IOException {
+	public int requestSegment(String url, int id, int playerCount) throws IOException {
 		
-		File data = new File("receivedData");
+		File data = new File("receivedData-"+playerCount);
 		
 		if(data.exists()){
 			data.delete();

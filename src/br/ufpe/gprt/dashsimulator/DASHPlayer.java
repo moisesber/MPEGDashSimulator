@@ -75,7 +75,7 @@ public class DASHPlayer implements Runnable{
 					timeouts++;
 					
 					synchronized(this){
-						wait( (int)( Math.random() * 100));
+						wait( 100 + (int)( Math.random() * 100));
 					}
 					
 					continue;

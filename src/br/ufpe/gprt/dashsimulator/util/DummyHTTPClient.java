@@ -28,6 +28,7 @@ public class DummyHTTPClient {
 	}
 
 	public int requestSegment(String url, int id, int playerCount) throws IOException {
+		System.out.println("["+playerCount+"] Downloading chunk id "+id+" url "+url);
 		
 		File data = new File("receivedData-"+playerCount);
 		

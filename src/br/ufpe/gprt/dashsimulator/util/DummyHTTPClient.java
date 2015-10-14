@@ -42,6 +42,9 @@ public class DummyHTTPClient {
 
 		URL website = new URL(siteAddress);
 		URLConnection con = website.openConnection();
+		con.setConnectTimeout(15000);
+		con.setReadTimeout(15000);
+		con.setAllowUserInteraction(false);    
 		InputStream in = con.getInputStream();
 //		InputStream in = website.openStream();
 		

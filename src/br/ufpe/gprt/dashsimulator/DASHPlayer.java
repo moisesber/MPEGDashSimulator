@@ -45,8 +45,8 @@ public class DASHPlayer implements Runnable{
 		
 		System.out.println("Starting to download video data. Downloading from "+host+":"+port);
 		
-		while(this.mpd.hasMoreSegments()){
-			String segmentURL = this.mpd.getNextSegment(currentBitRate);
+		while(this.mpd.hasMoreSegments(numberOfSegmentsDownloaded)){
+			String segmentURL = this.mpd.getSpecifSegment(currentBitRate, numberOfSegmentsDownloaded);
 			try {
 				System.out.println("["+this.playerCount+"] Requesting segment "+segmentURL+" currentBitrate = "+currentBitRate+" Up="+bitrateUp+" Down="+bitrateDown+ " timeouts="+timeouts);
 				int calculatedBitrate = this.httpClient.requestSegment(segmentURL, numberOfSegmentsDownloaded,this.playerCount);

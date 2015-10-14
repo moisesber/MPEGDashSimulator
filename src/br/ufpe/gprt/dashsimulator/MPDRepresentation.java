@@ -94,8 +94,20 @@ public class MPDRepresentation {
 		return baseURL +"/"+ representation +"/"+representation+"_"+bitrate+"kbit/"+representation+this.currentSegmentId+++".m4s";
 	}
 	
+	public String getSpecifSegment(int bitrate, int segmentId){
+		if(segmentId > this.numberOfSegments){
+			return null;
+		}
+		
+		return baseURL +"/"+ representation +"/"+representation+"_"+bitrate+"kbit/"+representation+segmentId+".m4s";
+	}
+	
 	public boolean hasMoreSegments(){
-		return this.currentSegmentId <= this.numberOfSegments;
+		return this.hasMoreSegments(this.currentSegmentId);
+	}
+	
+	public boolean hasMoreSegments(int segmentId){
+		return segmentId <= this.numberOfSegments;
 	}
 
 	public int getCurrentSegmentId() {

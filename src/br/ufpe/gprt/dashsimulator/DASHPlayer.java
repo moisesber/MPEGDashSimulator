@@ -48,7 +48,7 @@ public class DASHPlayer implements Runnable{
 		while(this.mpd.hasMoreSegments()){
 			String segmentURL = this.mpd.getNextSegment(currentBitRate);
 			try {
-				System.out.println("Requesting segment "+segmentURL+" currentBitrate = "+currentBitRate+" Up="+bitrateUp+" Down="+bitrateDown);
+				System.out.println("["+this.playerCount+"] Requesting segment "+segmentURL+" currentBitrate = "+currentBitRate+" Up="+bitrateUp+" Down="+bitrateDown);
 				int calculatedBitrate = this.httpClient.requestSegment(segmentURL, numberOfSegmentsDownloaded,this.playerCount);
 				
 				long downloadTime = this.httpClient.getSegmentTotalTimeMilis(numberOfSegmentsDownloaded);
@@ -70,7 +70,7 @@ public class DASHPlayer implements Runnable{
 				}
 				
 				
-				System.out.println("Bitrate calculated was "+calculatedBitrate+" total bytes downloaded were "+this.httpClient.getDownloadedSizeInBytes()+ " time was "+downloadTime );
+				System.out.println("["+this.playerCount+"] Bitrate calculated was "+calculatedBitrate+" total bytes downloaded were "+this.httpClient.getDownloadedSizeInBytes()+ " time was "+downloadTime );
 				if(this.logic.switchRepresentation(calculatedBitrate)){
 					int newBitRate = this.logic.getCurrentRepresentation();
 					
@@ -85,16 +85,17 @@ public class DASHPlayer implements Runnable{
 				numberOfSegmentsDownloaded++;
 				currentBitRate = this.logic.getCurrentRepresentation();
 				
-				synchronized(this){
-					wait(100);
-				}
+//				synchronized(this){
+//					wait(100);
+//				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			} 
+//			catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 			
 		}
 	}

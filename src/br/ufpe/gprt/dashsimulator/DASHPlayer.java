@@ -51,18 +51,25 @@ public class DASHPlayer implements Runnable{
 				System.out.println("["+this.playerCount+"] Requesting segment "+segmentURL+" currentBitrate = "+currentBitRate+" Up="+bitrateUp+" Down="+bitrateDown+ " timeouts="+timeouts);
 				int calculatedBitrate = this.httpClient.requestSegment(segmentURL, numberOfSegmentsDownloaded,this.playerCount);
 				
-				long downloadTime = this.httpClient.getSegmentTotalTimeMilis(numberOfSegmentsDownloaded);
+				long downloadeSizeInBytes = this.httpClient.getDownloadedSizeInBytes();
+				long startTime = this.httpClient.getStartDownloadTime(numberOfSegmentsDownloaded);
+				long totalTime = this.httpClient.getSegmentTotalTimeMilis(numberOfSegmentsDownloaded);
+				long downloadTime = this.httpClient.getLastDownloadTimeMilis();
+				long connectionTime = this.httpClient.getLastConnectionTimeMilis();
 				
 				String s = segmentURL + "\t"
-						+ this.httpClient.getDownloadedSizeInBytes()+ "\t"
-						+ (new Date(this.httpClient.getStartDownloadTime(numberOfSegmentsDownloaded))) + "\t"
-						+ this.httpClient.getStartDownloadTime(numberOfSegmentsDownloaded) + "\t"
-						+ this.httpClient.getLastConnectionTimeMilis() + "\t"
-						+ this.httpClient.getLastDownloadTimeMilis() + "\t"
-						+ this.httpClient.getSegmentTotalTimeMilis(numberOfSegmentsDownloaded)
-						+ formatter.format((((double)this.httpClient.getDownloadedSizeInBytes()) / ((double)this.httpClient.getSegmentTotalTimeMilis(numberOfSegmentsDownloaded)) ))+ "\t"
-						+ formatter.format((((double)this.httpClient.getDownloadedSizeInBytes()) / ((double)this.httpClient.getLastDownloadTimeMilis()) ))
+						+ downloadeSizeInBytes+ "\t"
+						+ (new Date(startTime)) + "\t"
+						+ startTime + "\t"
+						+ connectionTime + "\t"
+						+ downloadTime + "\t"
+						+ totalTime + "\t"
+//						+ formatter.format((((double)this.httpClient.getDownloadedSizeInBytes()) / ((double)this.httpClient.getSegmentTotalTimeMilis(numberOfSegmentsDownloaded)) ))+ "\t"
+						+ formatter.format(((double)downloadeSizeInBytes)/((double)totalTime))+ "\t"
+//						+ formatter.format((((double)this.httpClient.getDownloadedSizeInBytes()) / ((double)this.httpClient.getLastDownloadTimeMilis()) ))
+						+ formatter.format((((double)downloadeSizeInBytes) / ((double)downloadTime) ))
 						+ "\n";
+				
 				try (BufferedWriter writer = Files.newBufferedWriter(plotLogFile, StandardOpenOption.CREATE,StandardOpenOption.APPEND)) {
 				    writer.write(s, 0, s.length());
 				} catch (IOException x) {
@@ -81,7 +88,7 @@ public class DASHPlayer implements Runnable{
 					continue;
 				}
 				
-				System.out.println("["+this.playerCount+"] Bitrate calculated was "+calculatedBitrate+" total bytes downloaded were "+this.httpClient.getDownloadedSizeInBytes()+ " time was "+downloadTime );
+				System.out.println("["+this.playerCount+"] Bitrate calculated was "+calculatedBitrate+" total bytes downloaded were "+this.httpClient.getDownloadedSizeInBytes()+ " total time was "+totalTime );
 
 				if(this.logic.switchRepresentation(calculatedBitrate)){
 					int newBitRate = this.logic.getCurrentRepresentation();

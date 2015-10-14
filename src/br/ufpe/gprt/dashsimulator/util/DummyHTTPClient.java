@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.channels.Channels;
@@ -40,27 +41,31 @@ public class DummyHTTPClient {
 		String siteAddress = "http://"+host+":"+port+url;
 		long startTime = this.bitrateCalculator.startTrackingSegment(id);
 
-		URL website = new URL(siteAddress);
-		URLConnection con = website.openConnection();
-		con.setConnectTimeout(15000);
-		con.setReadTimeout(15000);
-		con.setAllowUserInteraction(false);    
-		InputStream in = con.getInputStream();
-//		InputStream in = website.openStream();
-		
-		
-		ReadableByteChannel rbc = Channels.newChannel(in);
-		
-		this.lastConnectionTimeMilis = System.currentTimeMillis() - startTime;
-		
-		FileOutputStream fos = new FileOutputStream(data);
-		fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-		
-		//Force TCP session end
-		HttpURLConnection httpCon = (HttpURLConnection)con;
-		httpCon.disconnect();
-		
-		
+		try{
+			URL website = new URL(siteAddress);
+			URLConnection con = website.openConnection();
+			con.setConnectTimeout(15000);
+			con.setReadTimeout(15000);
+			con.setAllowUserInteraction(false);    
+			InputStream in = con.getInputStream();
+//			InputStream in = website.openStream();
+			
+			
+			ReadableByteChannel rbc = Channels.newChannel(in);
+			
+			this.lastConnectionTimeMilis = System.currentTimeMillis() - startTime;
+			
+			FileOutputStream fos = new FileOutputStream(data);
+			fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+			
+			//Force TCP session end
+			HttpURLConnection httpCon = (HttpURLConnection)con;
+			httpCon.disconnect();
+		} catch (SocketTimeoutException stoe){
+			System.out.println("["+playerCount+"] Timeout downloading id "+id+" url "+url);
+			return Integer.MIN_VALUE;
+		}
+
 		this.lastDownloadTimeMilis = System.currentTimeMillis() - startTime - this.lastConnectionTimeMilis;
 		this.downloadedSizeInBytes = data.length();
 		int bitrate = this.bitrateCalculator.stopTrackingAndCalculateBitrate(id, this.getDownloadedSizeInBytes());

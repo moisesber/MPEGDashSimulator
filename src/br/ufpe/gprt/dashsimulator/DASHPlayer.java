@@ -40,6 +40,7 @@ public class DASHPlayer implements Runnable{
 		int numberOfSegmentsDownloaded = 1;
 		int bitrateUp = 0;
 		int bitrateDown = 0;
+		int timeouts = 0;
 		int currentBitRate = this.logic.getCurrentRepresentation();
 		
 		System.out.println("Starting to download video data. Downloading from "+host+":"+port);
@@ -47,7 +48,7 @@ public class DASHPlayer implements Runnable{
 		while(this.mpd.hasMoreSegments()){
 			String segmentURL = this.mpd.getNextSegment(currentBitRate);
 			try {
-				System.out.println("["+this.playerCount+"] Requesting segment "+segmentURL+" currentBitrate = "+currentBitRate+" Up="+bitrateUp+" Down="+bitrateDown);
+				System.out.println("["+this.playerCount+"] Requesting segment "+segmentURL+" currentBitrate = "+currentBitRate+" Up="+bitrateUp+" Down="+bitrateDown+ " timeouts="+timeouts);
 				int calculatedBitrate = this.httpClient.requestSegment(segmentURL, numberOfSegmentsDownloaded,this.playerCount);
 				
 				long downloadTime = this.httpClient.getSegmentTotalTimeMilis(numberOfSegmentsDownloaded);
@@ -69,7 +70,19 @@ public class DASHPlayer implements Runnable{
 				}
 				
 				
+				
+				if(calculatedBitrate == Integer.MIN_VALUE){
+					timeouts++;
+					
+					synchronized(this){
+						wait(100);
+					}
+					
+					continue;
+				}
+				
 				System.out.println("["+this.playerCount+"] Bitrate calculated was "+calculatedBitrate+" total bytes downloaded were "+this.httpClient.getDownloadedSizeInBytes()+ " time was "+downloadTime );
+
 				if(this.logic.switchRepresentation(calculatedBitrate)){
 					int newBitRate = this.logic.getCurrentRepresentation();
 					

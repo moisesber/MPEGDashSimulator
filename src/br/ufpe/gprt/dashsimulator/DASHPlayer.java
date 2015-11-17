@@ -21,9 +21,11 @@ public class DASHPlayer implements Runnable{
 	private DASHAdaptationLogic logic;
 	private DummyHTTPClient httpClient;
 	private int playerCount;
+	private int repetitions;
 
-	public DASHPlayer(int playerCount){
+	public DASHPlayer(int playerCount, int repetitions){
 		this.playerCount = playerCount;
+		this.repetitions = repetitions;
 		this.mpd = new MPDRepresentation();
 		this.host = this.mpd.getHost();
 		this.port = this.mpd.getPort();
@@ -31,12 +33,19 @@ public class DASHPlayer implements Runnable{
 
 	@Override
 	public void run() {
-		this.logic = new DASHAdaptationLogic(this.mpd.getBitrates());
-		this.httpClient = new DummyHTTPClient(host, port);
+
 		Charset charset = Charset.forName("US-ASCII");
 		Path plotLogFile = FileSystems.getDefault().getPath("plotData/all.data.dash.player-"+this.playerCount+"-"+System.currentTimeMillis());
 		NumberFormat formatter = new DecimalFormat("#0.000");		
-				
+
+		for (int i = 0; i < this.repetitions; i++) {
+			requestAllChunks(formatter, plotLogFile);
+		}
+	}
+
+	private void requestAllChunks(NumberFormat formatter, Path plotLogFile) {
+		this.logic = new DASHAdaptationLogic(this.mpd.getBitrates());
+		this.httpClient = new DummyHTTPClient(host, port);
 		int numberOfSegmentsDownloaded = 1;
 		int bitrateUp = 0;
 		int bitrateDown = 0;

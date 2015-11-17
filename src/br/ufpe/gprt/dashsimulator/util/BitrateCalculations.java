@@ -14,6 +14,10 @@ public class BitrateCalculations {
 	}
 	
 	public long startTrackingSegment(int id){
+		if(this.initialTimes.containsKey(id)){
+			return this.initialTimes.get(id);
+		}
+		
 		long currentTime = System.currentTimeMillis();
 		this.initialTimes.put(id, currentTime);
 		return currentTime;

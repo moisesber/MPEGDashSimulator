@@ -51,6 +51,16 @@ public class DASHPlayer implements Runnable{
 				System.out.println("["+this.playerCount+"] Requesting segment "+segmentURL+" currentBitrate = "+currentBitRate+" Up="+bitrateUp+" Down="+bitrateDown+ " timeouts="+timeouts);
 				int calculatedBitrate = this.httpClient.requestSegment(segmentURL, numberOfSegmentsDownloaded,this.playerCount);
 				
+				if(calculatedBitrate == Integer.MIN_VALUE){
+					timeouts++;
+					
+					synchronized(this){
+						wait( 100 + (int)( Math.random() * 100));
+					}
+					
+					continue;
+				}
+				
 				long downloadeSizeInBytes = this.httpClient.getDownloadedSizeInBytes();
 				long startTime = this.httpClient.getStartDownloadTime(numberOfSegmentsDownloaded);
 				long totalTime = this.httpClient.getSegmentTotalTimeMilis(numberOfSegmentsDownloaded);
@@ -77,16 +87,6 @@ public class DASHPlayer implements Runnable{
 				}
 				
 				
-				
-				if(calculatedBitrate == Integer.MIN_VALUE){
-					timeouts++;
-					
-					synchronized(this){
-						wait( 100 + (int)( Math.random() * 100));
-					}
-					
-					continue;
-				}
 				
 				System.out.println("["+this.playerCount+"] Bitrate calculated was "+calculatedBitrate+" total bytes downloaded were "+this.httpClient.getDownloadedSizeInBytes()+ " total time was "+totalTime );
 

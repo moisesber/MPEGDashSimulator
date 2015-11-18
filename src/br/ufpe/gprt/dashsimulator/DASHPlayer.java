@@ -15,6 +15,7 @@ import br.ufpe.gprt.dashsimulator.util.DummyHTTPClient;
 
 public class DASHPlayer implements Runnable{
 	
+	private static final int SEGMENT_SIZE_IN_MILISECONDS = 6000;
 	private int port;
 	private String host;
 	private MPDRepresentation mpd;
@@ -22,6 +23,7 @@ public class DASHPlayer implements Runnable{
 	private DummyHTTPClient httpClient;
 	private int playerCount;
 	private int repetitions;
+	private int conituinityFailures;
 
 	public DASHPlayer(int playerCount, int repetitions){
 		this.playerCount = playerCount;
@@ -51,10 +53,13 @@ public class DASHPlayer implements Runnable{
 		int bitrateDown = 0;
 		int timeouts = 0;
 		int currentBitRate = this.logic.getCurrentRepresentation();
+		long initialTime = System.currentTimeMillis();
+		this.conituinityFailures = 0;
 		
 		System.out.println("Starting to download video data. Downloading from "+host+":"+port);
 		
 		while(this.mpd.hasMoreSegments(numberOfSegmentsDownloaded)){
+			updatePlaybackContinuity(initialTime, numberOfSegmentsDownloaded);
 			String segmentURL = this.mpd.getSpecifSegment(currentBitRate, numberOfSegmentsDownloaded);
 			try {
 				System.out.println("["+this.playerCount+"] Requesting segment "+segmentURL+" currentBitrate = "+currentBitRate+" Up="+bitrateUp+" Down="+bitrateDown+ " timeouts="+timeouts);
@@ -64,7 +69,8 @@ public class DASHPlayer implements Runnable{
 					timeouts++;
 					
 					synchronized(this){
-						wait( 100 + (int)( Math.random() * 100));
+//						wait( 100 + (int)( Math.random() * 100));
+						wait(100);
 					}
 					
 					continue;
@@ -86,7 +92,8 @@ public class DASHPlayer implements Runnable{
 //						+ formatter.format((((double)this.httpClient.getDownloadedSizeInBytes()) / ((double)this.httpClient.getSegmentTotalTimeMilis(numberOfSegmentsDownloaded)) ))+ "\t"
 						+ formatter.format(((double)downloadeSizeInBytes)/((double)totalTime))+ "\t"
 //						+ formatter.format((((double)this.httpClient.getDownloadedSizeInBytes()) / ((double)this.httpClient.getLastDownloadTimeMilis()) ))
-						+ formatter.format((((double)downloadeSizeInBytes) / ((double)downloadTime) ))
+						+ formatter.format((((double)downloadeSizeInBytes) / ((double)downloadTime) ))+ "\t"
+						+ this.conituinityFailures
 						+ "\n";
 				
 				try (BufferedWriter writer = Files.newBufferedWriter(plotLogFile, StandardOpenOption.CREATE,StandardOpenOption.APPEND)) {
@@ -127,7 +134,19 @@ public class DASHPlayer implements Runnable{
 			
 		}
 	}
-	
-	
 
+	private void updatePlaybackContinuity(long initialTime,
+			int numberOfSegmentsDownloaded) {
+		if(numberOfSegmentsDownloaded < 2){
+			return;
+		}
+		
+		long elapsedTime = System.currentTimeMillis() - initialTime;
+		long downloadedTime = numberOfSegmentsDownloaded * SEGMENT_SIZE_IN_MILISECONDS;
+		
+		if(elapsedTime > downloadedTime){
+			this.conituinityFailures++;	
+		}
+	}
+	
 }

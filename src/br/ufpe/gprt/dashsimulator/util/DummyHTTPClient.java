@@ -1,6 +1,5 @@
 package br.ufpe.gprt.dashsimulator.util;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -8,12 +7,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 
 public class DummyHTTPClient {
+	
+	private static int TIMEOUT_MILIS = 120000;
+//	private static int TIMEOUT_MILIS = 1000;
 
 	private String host;
 	private int port;
@@ -43,16 +46,17 @@ public class DummyHTTPClient {
 		String siteAddress = "http://"+host+":"+port+url;
 		long startTime = this.bitrateCalculator.startTrackingSegment(id);
 
-//		//New IO java download
-//		try{
-//			newIOJavaDocumentDownload(data, siteAddress, startTime);
-//		} catch (SocketTimeoutException stoe){
-//			System.out.println("["+playerCount+"] Timeout downloading id "+id+" url "+url);
-//			return Integer.MIN_VALUE;
-//		}
 		
-		normalStreamDocumentDownload(data, siteAddress, startTime);
+		try{
+			//	New IO java download
+//			newIOJavaDocumentDownload(data, siteAddress, startTime);
+			normalStreamDocumentDownload(data, siteAddress, startTime);
 
+		} catch (SocketTimeoutException stoe){
+			System.out.println("["+playerCount+"] Timeout downloading id "+id+" url "+url);
+			return Integer.MIN_VALUE;
+		}
+		
 		this.lastDownloadTimeMilis = System.currentTimeMillis() - startTime - this.lastConnectionTimeMilis;
 		this.downloadedSizeInBytes = data.length();
 		int bitrate = this.bitrateCalculator.stopTrackingAndCalculateBitrate(id, this.getDownloadedSizeInBytes());
@@ -63,9 +67,15 @@ public class DummyHTTPClient {
 	private void normalStreamDocumentDownload(File data, String siteAddress,
 			long startTime) throws IOException, MalformedURLException,
 			FileNotFoundException {
-		BufferedInputStream in = new BufferedInputStream(new URL(siteAddress).openStream());
+//		BufferedInputStream in = new BufferedInputStream(new URL(siteAddress).openStream());
 		
-//		BufferedReader in = new BufferedReader(new InputStreamReader(new URL(siteAddress).openStream()), 1);
+		URL website = new URL(siteAddress);
+		URLConnection con = website.openConnection();
+		con.setConnectTimeout(TIMEOUT_MILIS);
+		con.setReadTimeout(TIMEOUT_MILIS);
+		con.setAllowUserInteraction(false);    
+		InputStream in = con.getInputStream();
+		
 
 		this.lastConnectionTimeMilis = System.currentTimeMillis() - startTime;
 		
@@ -88,8 +98,8 @@ public class DummyHTTPClient {
 			FileNotFoundException {
 		URL website = new URL(siteAddress);
 		URLConnection con = website.openConnection();
-		con.setConnectTimeout(15000);
-		con.setReadTimeout(15000);
+		con.setConnectTimeout(TIMEOUT_MILIS);
+		con.setReadTimeout(TIMEOUT_MILIS);
 		con.setAllowUserInteraction(false);    
 		InputStream in = con.getInputStream();
 		

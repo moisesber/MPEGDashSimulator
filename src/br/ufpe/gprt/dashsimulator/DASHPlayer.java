@@ -69,8 +69,8 @@ public class DASHPlayer implements Runnable{
 					timeouts++;
 					
 					synchronized(this){
-//						wait( 100 + (int)( Math.random() * 100));
-						wait(100);
+						wait( 100 + (int)( Math.random() * 100));
+//						wait(100);
 					}
 					
 					continue;
@@ -121,7 +121,8 @@ public class DASHPlayer implements Runnable{
 				currentBitRate = this.logic.getCurrentRepresentation();
 				
 				synchronized(this){
-					wait(100);
+					wait( 100 + (int)( Math.random() * 100));
+//					wait(100);
 				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block

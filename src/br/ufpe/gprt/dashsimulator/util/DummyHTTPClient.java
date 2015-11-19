@@ -15,8 +15,8 @@ import java.nio.channels.ReadableByteChannel;
 
 public class DummyHTTPClient {
 	
-	private static int TIMEOUT_MILIS = 120000;
-//	private static int TIMEOUT_MILIS = 1000;
+//	private static int TIMEOUT_MILIS = 120000;
+	private static int TIMEOUT_MILIS = 14000;
 
 	private String host;
 	private int port;
@@ -49,8 +49,8 @@ public class DummyHTTPClient {
 		
 		try{
 			//	New IO java download
-//			newIOJavaDocumentDownload(data, siteAddress, startTime);
-			normalStreamDocumentDownload(data, siteAddress, startTime);
+			newIOJavaDocumentDownload(data, siteAddress, startTime);
+//			normalStreamDocumentDownload(data, siteAddress, startTime);
 
 		} catch (SocketTimeoutException stoe){
 			System.out.println("["+playerCount+"] Timeout downloading id "+id+" url "+url);

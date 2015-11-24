@@ -1,5 +1,8 @@
 package br.ufpe.gprt.dashsimulator;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 public class Main {
 
 	public static void main(String[] args) {
@@ -25,13 +28,24 @@ public class Main {
 			}
 			
 		}
+		
+		ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() - 1);	
 
 		for (int i = 0; i < numberOfClients; i++) {
 			DASHPlayer player = new DASHPlayer(i, repetitions);
-			Thread t = new Thread(player);
-			t.start();
+			
+//			
+//			Thread t = new Thread(player);
+//			t.start();
+			
+			executor.execute(player);
 		}
 		
+		executor.shutdown();
+		
+//		while (!executor.isTerminated()) {
+//			 
+//		}
 	}
 
 }

@@ -29,7 +29,8 @@ public class Main {
 			
 		}
 		
-		ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() - 1);	
+//		ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() - 1);
+		ExecutorService executor = Executors.newWorkStealingPool();
 
 		for (int i = 0; i < numberOfClients; i++) {
 			DASHPlayer player = new DASHPlayer(i, repetitions);

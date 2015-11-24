@@ -46,9 +46,9 @@ public class Main {
 		
 		executor.shutdown();
 		
-		while (!executor.isTerminated()) {
-			 
-		}
+//		while (!executor.isTerminated()) {
+//			 
+//		}
 	}
 
 }

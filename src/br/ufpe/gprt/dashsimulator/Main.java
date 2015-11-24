@@ -2,7 +2,6 @@ package br.ufpe.gprt.dashsimulator;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ForkJoinPool;
 
 public class Main {
 
@@ -31,7 +30,7 @@ public class Main {
 		}
 		
 //		ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() - 1);
-		ExecutorService executor = Executors.newWorkStealingPool();
+		ExecutorService executor = Executors.newCachedThreadPool();
 //		ExecutorService executor = new ForkJoinPool();
 
 		for (int i = 0; i < numberOfClients; i++) {
@@ -41,7 +40,8 @@ public class Main {
 //			Thread t = new Thread(player);
 //			t.start();
 			
-			executor.execute(player);
+			executor.submit(player);
+//			executor.execute(player);
 		}
 		
 		executor.shutdown();

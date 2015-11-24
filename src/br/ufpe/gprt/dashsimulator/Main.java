@@ -31,8 +31,8 @@ public class Main {
 		}
 		
 //		ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() - 1);
-//		ExecutorService executor = Executors.newWorkStealingPool();
-		ExecutorService executor = new ForkJoinPool();
+		ExecutorService executor = Executors.newWorkStealingPool();
+//		ExecutorService executor = new ForkJoinPool();
 
 		for (int i = 0; i < numberOfClients; i++) {
 			DASHPlayer player = new DASHPlayer(i, repetitions);

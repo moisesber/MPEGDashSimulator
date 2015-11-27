@@ -83,7 +83,7 @@ public class DummyHTTPClient {
 			fis.close();
 			return md5;
 
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

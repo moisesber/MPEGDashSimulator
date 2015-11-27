@@ -1,6 +1,7 @@
 package br.ufpe.gprt.dashsimulator.util;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -59,9 +60,26 @@ public class DummyHTTPClient {
 		
 		this.lastDownloadTimeMilis = System.currentTimeMillis() - startTime - this.lastConnectionTimeMilis;
 		this.downloadedSizeInBytes = data.length();
+		
+		String downloadedMd5 = getMd5Sum(data);
+		String localMd5 = getMd5Sum(new File(url));
+		
+		if(downloadedMd5.equals(localMd5)){
+			System.out.println("["+playerCount+"] Md5 checksum OK for "+id+" url "+url);
+		} else {
+			System.out.println("["+playerCount+"] Md5 checksum FAIL for "+id+" url "+url);
+		}
+		
 		int bitrate = this.bitrateCalculator.stopTrackingAndCalculateBitrate(id, this.getDownloadedSizeInBytes());
 		
 		return bitrate;
+	}
+	
+	public String getMd5Sum(File file) throws IOException{
+		FileInputStream fis = new FileInputStream(file);
+		String md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex(fis);
+		fis.close();
+		return md5;
 	}
 
 	private void normalStreamDocumentDownload(File data, String siteAddress,

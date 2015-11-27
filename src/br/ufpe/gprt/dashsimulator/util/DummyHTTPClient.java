@@ -60,9 +60,13 @@ public class DummyHTTPClient {
 		
 		this.lastDownloadTimeMilis = System.currentTimeMillis() - startTime - this.lastConnectionTimeMilis;
 		this.downloadedSizeInBytes = data.length();
-		
+		System.out.println("["+playerCount+"] Calculating md5sum of downloaded file ");
 		String downloadedMd5 = getMd5Sum(data);
+		
+		System.out.println("["+playerCount+"] Calculating md5sum of local file ");
 		String localMd5 = getMd5Sum(new File(url));
+		
+		System.out.println("["+playerCount+"] Checking sums... ");
 		
 		if(downloadedMd5.equals(localMd5)){
 			System.out.println("["+playerCount+"] Md5 checksum OK for "+id+" url "+url);

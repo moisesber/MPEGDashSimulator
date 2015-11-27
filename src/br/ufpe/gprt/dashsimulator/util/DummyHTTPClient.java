@@ -50,8 +50,8 @@ public class DummyHTTPClient {
 		
 		try{
 			//	New IO java download
-			newIOJavaDocumentDownload(data, siteAddress, startTime);
-//			normalStreamDocumentDownload(data, siteAddress, startTime);
+//			newIOJavaDocumentDownload(data, siteAddress, startTime);
+			normalStreamDocumentDownload(data, siteAddress, startTime);
 
 		} catch (SocketTimeoutException stoe){
 			System.out.println("["+playerCount+"] Timeout downloading id "+id+" url "+url);

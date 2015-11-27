@@ -43,6 +43,18 @@
 	</path>
 
 
+	<!-- constructs the external libraries classpath name -->
+	<pathconvert property="classpath.name" pathsep=" ">
+		<path refid="classpath" />
+		<mapper>
+			<chainedmapper>
+				<flattenmapper />
+				<globmapper from="*.jar" to="lib/*.jar" />
+			</chainedmapper>
+		</mapper>
+	</pathconvert>
+
+
     <target name="clean">
         <delete dir="${build.dir}"/>
     </target>
@@ -53,10 +65,14 @@
     </target>
 
     <target name="jar" depends="compile,copy-dependencies">
+
+	<echo message="classpath.name : ${classpath.name} " />
+	
         <mkdir dir="${jar.dir}"/>
         <jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${classes.dir}" >
             <manifest>
                 <attribute name="Main-Class" value="${main-class}"/>
+		<attribute name="Class-Path" value="${classpath.name}" />
             </manifest>
         </jar>
     </target>

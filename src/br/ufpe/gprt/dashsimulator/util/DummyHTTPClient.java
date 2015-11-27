@@ -75,11 +75,19 @@ public class DummyHTTPClient {
 		return bitrate;
 	}
 	
-	public String getMd5Sum(File file) throws IOException{
-		FileInputStream fis = new FileInputStream(file);
-		String md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex(fis);
-		fis.close();
-		return md5;
+	public String getMd5Sum(File file) {
+		FileInputStream fis;
+		try {
+			fis = new FileInputStream(file);
+			String md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex(fis);
+			fis.close();
+			return md5;
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "";
 	}
 
 	private void normalStreamDocumentDownload(File data, String siteAddress,

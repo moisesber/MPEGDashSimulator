@@ -1,27 +1,60 @@
-<project name="MPEGDashSimulator" basedir="." default="main">
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="MPEGDashSimulator" basedir="." default="main">
 
     <property name="src.dir"     value="src"/>
 
     <property name="build.dir"   value="build"/>
     <property name="classes.dir" value="${build.dir}/classes"/>
     <property name="jar.dir"     value="${build.dir}/jar"/>
+	<property name="lib.dir" value="lib" />
+    <property name="jar.lib.dir"     value="${build.dir}/jar/lib"/>
 
     <property name="main-class"  value="br.ufpe.gprt.dashsimulator.Main"/>
 
+
+	<!-- ivy start -->
+	<!-- ivy to get dependencies and copy to project lib folder automatically -->
+	<target name="resolve" description="retrieve dependencies with ivy">
+		<ivy:retrieve />
+	</target>
+
+	<!-- install ivy -->
+	<target name="ivy" description="Install ivy">
+		<mkdir dir="${user.home}/.ant/lib" />
+		<get dest="${user.home}/.ant/lib/ivy.jar" 
+			src="http://search.maven.org/remotecontent?filepath=org/apache/ivy/ivy/2.4.0-rc1/ivy-2.4.0-rc1.jar" />
+	</target>
+	<!-- ivy end -->
+
+
+	<target name="copy-dependencies">
+		<copy todir="${jar.lib.dir}">
+			<fileset dir="${lib.dir}" includes="**/*.jar" excludes="**/*sources.jar, **/*javadoc.jar" />
+		</copy>
+	</target>
+
+
+	<!-- external libraries classpath, we don't need sources and javadoc -->
+	<path id="classpath">
+		<fileset dir="${basedir}/">
+			<include name="${lib.dir}/*.jar" />
+			<exclude name="${lib.dir}/*sources.jar"/>
+			<exclude name="${lib.dir}/*javadoc.jar"/>
+		</fileset>
+	</path>
 
 
     <target name="clean">
         <delete dir="${build.dir}"/>
     </target>
 
-    <target name="compile">
+    <target name="compile" depends="ivy,resolve">
         <mkdir dir="${classes.dir}"/>
-        <javac srcdir="${src.dir}" destdir="${classes.dir}"/>
+        <javac srcdir="${src.dir}" destdir="${classes.dir}"  classpathref="classpath"/>
     </target>
 
-    <target name="jar" depends="compile">
+    <target name="jar" depends="compile,copy-dependencies">
         <mkdir dir="${jar.dir}"/>
-        <jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${classes.dir}">
+        <jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${classes.dir}" >
             <manifest>
                 <attribute name="Main-Class" value="${main-class}"/>
             </manifest>

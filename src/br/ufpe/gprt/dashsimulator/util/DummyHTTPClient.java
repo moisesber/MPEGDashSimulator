@@ -60,13 +60,9 @@ public class DummyHTTPClient {
 		
 		this.lastDownloadTimeMilis = System.currentTimeMillis() - startTime - this.lastConnectionTimeMilis;
 		this.downloadedSizeInBytes = data.length();
-		System.out.println("["+playerCount+"] Calculating md5sum of downloaded file ");
+
 		String downloadedMd5 = getMd5Sum(data);
-		
-		System.out.println("["+playerCount+"] Calculating md5sum of local file ");
 		String localMd5 = getMd5Sum(new File(url));
-		
-		System.out.println("["+playerCount+"] Checking sums... ");
 		
 		if(downloadedMd5.equals(localMd5)){
 			System.out.println("["+playerCount+"] Md5 checksum OK for "+id+" url "+url);
@@ -82,20 +78,15 @@ public class DummyHTTPClient {
 	public String getMd5Sum(File file) {
 		FileInputStream fis = null;
 		try {
-			System.out.println("1");
 			fis = new FileInputStream(file);
-			System.out.println("2");
 			String md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex(fis);
-			System.out.println("3");
 			fis.close();
-			System.out.println("4");
 
 			return md5;
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			System.out.println("WTF!");
 		}
 		return "";
 	}

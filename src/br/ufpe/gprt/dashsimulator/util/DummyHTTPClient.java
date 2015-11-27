@@ -80,16 +80,22 @@ public class DummyHTTPClient {
 	}
 	
 	public String getMd5Sum(File file) {
-		FileInputStream fis;
+		FileInputStream fis = null;
 		try {
+			System.out.println("1");
 			fis = new FileInputStream(file);
+			System.out.println("2");
 			String md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex(fis);
+			System.out.println("3");
 			fis.close();
+			System.out.println("4");
+
 			return md5;
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			System.out.println("WTF!");
 		}
 		return "";
 	}

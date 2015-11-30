@@ -69,17 +69,17 @@ public class DummyHTTPClient {
 			
 			System.out.println(evaluateTime(beforeNormal, afterNormal, "Norml", checkFileIntegrity(url, id, playerCount, data)));
 			
-			if(data.exists()){
-				data.delete();
-			}
-			
-			data.createNewFile();
-			
-			long beforeMixed = System.currentTimeMillis();
-			mixedStreamDocumentDownload(data, siteAddress, startTime);
-			long afterMixed = System.currentTimeMillis();
-
-			System.out.println(evaluateTime(beforeMixed, afterMixed, "Mixed", checkFileIntegrity(url, id, playerCount, data)));
+//			if(data.exists()){
+//				data.delete();
+//			}
+//			
+//			data.createNewFile();
+//			
+//			long beforeMixed = System.currentTimeMillis();
+//			mixedStreamDocumentDownload(data, siteAddress, startTime);
+//			long afterMixed = System.currentTimeMillis();
+//
+//			System.out.println(evaluateTime(beforeMixed, afterMixed, "Mixed", checkFileIntegrity(url, id, playerCount, data)));
 
 		} catch (SocketTimeoutException stoe){
 			System.out.println("["+playerCount+"] Timeout downloading id "+id+" url "+url);
@@ -154,7 +154,9 @@ public class DummyHTTPClient {
             fout.write(dowloadData, 0, count);
         }
         
-        
+		//Force TCP session end
+		HttpURLConnection httpCon = (HttpURLConnection)con;
+		httpCon.disconnect();
         fout.close();
         in.close();
 	}

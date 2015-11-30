@@ -49,30 +49,28 @@ public class DummyHTTPClient {
 
 		
 		try{
-
-			
-			
-			long beforeNormal = System.currentTimeMillis();
+//			long beforeNormal = System.currentTimeMillis();
+//
 			normalStreamDocumentDownload(data, siteAddress, startTime);
-			long afterNormal = System.currentTimeMillis();
 			
-			System.out.println(evaluateTime(beforeNormal, afterNormal, "Norml", checkFileIntegrity(url, id, playerCount, data)));
-
-			
-			if(data.exists()){
-				data.delete();
-			}
-			
-			data.createNewFile();
+//			long afterNormal = System.currentTimeMillis();
+//			
+//			System.out.println(evaluateTime(beforeNormal, afterNormal, "Norml", checkFileIntegrity(url, id, playerCount, data)));
+//
+//			
+//			if(data.exists()){
+//				data.delete();
+//			}
+//			
+//			data.createNewFile();
 
 			
 			//	New IO java download
-			
-			long beforeNewIo = System.currentTimeMillis();
-			newIOJavaDocumentDownload(data, siteAddress, startTime);
-			long afterNewIo = System.currentTimeMillis();
-			
-			System.out.println(evaluateTime(beforeNewIo, afterNewIo, "NewIo", checkFileIntegrity(url, id, playerCount, data)));
+//			long beforeNewIo = System.currentTimeMillis();
+//			newIOJavaDocumentDownload(data, siteAddress, startTime);
+//			long afterNewIo = System.currentTimeMillis();
+//			
+//			System.out.println(evaluateTime(beforeNewIo, afterNewIo, "NewIo", checkFileIntegrity(url, id, playerCount, data)));
 
 			
 //			if(data.exists()){

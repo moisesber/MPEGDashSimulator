@@ -17,7 +17,7 @@ import java.nio.channels.ReadableByteChannel;
 public class DummyHTTPClient {
 	
 //	private static int TIMEOUT_MILIS = 30000;
-	private static int TIMEOUT_MILIS = 3000;
+	private static int TIMEOUT_MILIS = 4000;
 
 	private String host;
 	private int port;
@@ -152,10 +152,11 @@ public class DummyHTTPClient {
 		this.lastConnectionTimeMilis = System.currentTimeMillis() - startTime;
 		
 		FileOutputStream fout = new FileOutputStream(data);
+		int bufferSize = 1024 * 64;
 
-        final byte dowloadData[] = new byte[1024 * 4];
+        final byte dowloadData[] = new byte[bufferSize];
         int count;
-        while ((count = in.read(dowloadData, 0, 1024 * 4)) != -1) {
+        while ((count = in.read(dowloadData, 0, bufferSize)) != -1) {
 //        	System.out.println("receiving data "+count);
             fout.write(dowloadData, 0, count);
         }

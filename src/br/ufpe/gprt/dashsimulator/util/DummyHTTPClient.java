@@ -164,6 +164,9 @@ public class DummyHTTPClient {
 			FileNotFoundException {
 		URL website = new URL(siteAddress);
 		URLConnection connection = website.openConnection();
+		connection.setConnectTimeout(TIMEOUT_MILIS);
+		connection.setReadTimeout(TIMEOUT_MILIS);
+		connection.setAllowUserInteraction(false);    
 		ReadableByteChannel rbc = Channels.newChannel(connection
 				.getInputStream());
 

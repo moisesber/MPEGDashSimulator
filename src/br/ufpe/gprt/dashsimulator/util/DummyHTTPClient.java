@@ -93,7 +93,11 @@ public class DummyHTTPClient {
 		this.lastDownloadTimeMilis = System.currentTimeMillis() - startTime - this.lastConnectionTimeMilis;
 		this.downloadedSizeInBytes = data.length();
 
-		checkFileIntegrity(url, id, playerCount, data);
+		if (checkFileIntegrity(url, id, playerCount, data)){
+			System.out.println("["+playerCount+"] Md5 checksum OK for "+id+" url "+url);
+		} else {
+			System.out.println("["+playerCount+"] Md5 checksum FAIL for "+id+" url "+url);
+		}
 		
 		int bitrate = this.bitrateCalculator.stopTrackingAndCalculateBitrate(id, this.getDownloadedSizeInBytes());
 		
@@ -110,10 +114,8 @@ public class DummyHTTPClient {
 		String localMd5 = getMd5Sum(new File(url));
 		
 		if(downloadedMd5.equals(localMd5)){
-//			System.out.println("["+playerCount+"] Md5 checksum OK for "+id+" url "+url);
 			return true;
 		} else {
-//			System.out.println("["+playerCount+"] Md5 checksum FAIL for "+id+" url "+url);
 			return false;
 		}
 	}

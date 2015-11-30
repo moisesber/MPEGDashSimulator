@@ -49,6 +49,10 @@ public class DASHAdaptationLogic {
 		
 		return false;
 	}
+	
+	public int getLowestRepresentation() {
+		return lowestRepresentation;
+	}
 
 	public int getCurrentRepresentation() {
 		return currentRepresentation / BITPERSECOND_MULTIPLIER;

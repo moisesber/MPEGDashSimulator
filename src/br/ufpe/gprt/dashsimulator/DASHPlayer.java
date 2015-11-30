@@ -67,6 +67,18 @@ public class DASHPlayer implements Runnable{
 				if(calculatedBitrate == Integer.MIN_VALUE){
 					timeouts++;
 					
+					calculatedBitrate = this.logic.getLowestRepresentation();
+					
+					if(this.logic.switchRepresentation(calculatedBitrate)){
+						int newBitRate = this.logic.getCurrentRepresentation();
+						
+						if(newBitRate > currentBitRate ){
+							bitrateUp++;
+						} else if(newBitRate < currentBitRate ){
+							bitrateDown++;
+						}
+					}
+					
 					synchronized(this){
 						wait( 100 + (int)( Math.random() * 100));
 //						wait(100);

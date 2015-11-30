@@ -17,7 +17,7 @@ import java.nio.channels.ReadableByteChannel;
 public class DummyHTTPClient {
 	
 //	private static int TIMEOUT_MILIS = 30000;
-	private static int TIMEOUT_MILIS = 6000;
+	private static int TIMEOUT_MILIS = 3000;
 
 	private String host;
 	private int port;

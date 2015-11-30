@@ -50,8 +50,36 @@ public class DummyHTTPClient {
 		
 		try{
 			//	New IO java download
-//			newIOJavaDocumentDownload(data, siteAddress, startTime);
+			
+			long beforeNewIo = System.currentTimeMillis();
+			newIOJavaDocumentDownload(data, siteAddress, startTime);
+			long afterNewIo = System.currentTimeMillis();
+			
+			System.out.println(evaluateTime(beforeNewIo, afterNewIo, "NewIo", checkFileIntegrity(url, id, playerCount, data)));
+			
+			if(data.exists()){
+				data.delete();
+			}
+			
+			data.createNewFile();
+			
+			long beforeNormal = System.currentTimeMillis();
 			normalStreamDocumentDownload(data, siteAddress, startTime);
+			long afterNormal = System.currentTimeMillis();
+			
+			System.out.println(evaluateTime(beforeNormal, afterNormal, "Norml", checkFileIntegrity(url, id, playerCount, data)));
+			
+			if(data.exists()){
+				data.delete();
+			}
+			
+			data.createNewFile();
+			
+			long beforeMixed = System.currentTimeMillis();
+			mixedStreamDocumentDownload(data, siteAddress, startTime);
+			long afterMixed = System.currentTimeMillis();
+
+			System.out.println(evaluateTime(beforeMixed, afterMixed, "Mixed", checkFileIntegrity(url, id, playerCount, data)));
 
 		} catch (SocketTimeoutException stoe){
 			System.out.println("["+playerCount+"] Timeout downloading id "+id+" url "+url);
@@ -61,18 +89,29 @@ public class DummyHTTPClient {
 		this.lastDownloadTimeMilis = System.currentTimeMillis() - startTime - this.lastConnectionTimeMilis;
 		this.downloadedSizeInBytes = data.length();
 
-		String downloadedMd5 = getMd5Sum(data);
-		String localMd5 = getMd5Sum(new File(url));
-		
-		if(downloadedMd5.equals(localMd5)){
-			System.out.println("["+playerCount+"] Md5 checksum OK for "+id+" url "+url);
-		} else {
-			System.out.println("["+playerCount+"] Md5 checksum FAIL for "+id+" url "+url);
-		}
+		checkFileIntegrity(url, id, playerCount, data);
 		
 		int bitrate = this.bitrateCalculator.stopTrackingAndCalculateBitrate(id, this.getDownloadedSizeInBytes());
 		
 		return bitrate;
+	}
+	
+	private String evaluateTime(long before, long after, String type, boolean integrity){
+		return "Elapsed time was "+(after - before)+ " and integrity was "+integrity+" for |"+type+"|";
+	}
+
+	private boolean checkFileIntegrity(String url, int id, int playerCount,
+			File data) {
+		String downloadedMd5 = getMd5Sum(data);
+		String localMd5 = getMd5Sum(new File(url));
+		
+		if(downloadedMd5.equals(localMd5)){
+//			System.out.println("["+playerCount+"] Md5 checksum OK for "+id+" url "+url);
+			return true;
+		} else {
+//			System.out.println("["+playerCount+"] Md5 checksum FAIL for "+id+" url "+url);
+			return false;
+		}
 	}
 	
 	public String getMd5Sum(File file) {
@@ -108,9 +147,9 @@ public class DummyHTTPClient {
 		
 		FileOutputStream fout = new FileOutputStream(data);
 
-        final byte dowloadData[] = new byte[1024 * 8];
+        final byte dowloadData[] = new byte[1024 * 4];
         int count;
-        while ((count = in.read(dowloadData, 0, 1024 * 8)) != -1) {
+        while ((count = in.read(dowloadData, 0, 1024 * 4)) != -1) {
 //        	System.out.println("receiving data "+count);
             fout.write(dowloadData, 0, count);
         }
@@ -118,6 +157,31 @@ public class DummyHTTPClient {
         
         fout.close();
         in.close();
+	}
+	
+	private void mixedStreamDocumentDownload(File data, String siteAddress,
+			long startTime) throws IOException, MalformedURLException,
+			FileNotFoundException {
+		URL website = new URL(siteAddress);
+		URLConnection connection = website.openConnection();
+		ReadableByteChannel rbc = Channels.newChannel(connection
+				.getInputStream());
+
+		this.lastConnectionTimeMilis = System.currentTimeMillis() - startTime;
+
+		FileOutputStream fos = new FileOutputStream(data);
+		long expectedSize = connection.getContentLength();
+		long transferedSize = 0L;
+		while (transferedSize < expectedSize) {
+			long delta = fos.getChannel().transferFrom(rbc, transferedSize,
+					1 << 16);
+			transferedSize += delta;
+		}
+		fos.close();
+
+		HttpURLConnection httpCon = (HttpURLConnection) connection;
+		httpCon.disconnect();
+
 	}
 
 	private void newIOJavaDocumentDownload(File data, String siteAddress,

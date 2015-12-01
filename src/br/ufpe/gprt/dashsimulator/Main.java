@@ -37,14 +37,14 @@ public class Main {
 			DASHPlayer player = new DASHPlayer(i, repetitions);
 			
 //			
-//			Thread t = new Thread(player);
-//			t.start();
+			Thread t = new Thread(player);
+			t.start();
 			
-			executor.submit(player);
+//			executor.submit(player);
 //			executor.execute(player);
 		}
 		
-		executor.shutdown();
+//		executor.shutdown();
 		
 //		while (!executor.isTerminated()) {
 //			 

@@ -29,8 +29,8 @@ public class Main {
 			
 		}
 		
-		ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() - 1);
-//		ExecutorService executor = Executors.newCachedThreadPool();
+//		ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() - 1);
+		ExecutorService executor = Executors.newCachedThreadPool();
 //		ExecutorService executor = new ForkJoinPool();
 
 		for (int i = 0; i < numberOfClients; i++) {

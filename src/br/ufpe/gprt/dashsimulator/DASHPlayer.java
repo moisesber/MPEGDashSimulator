@@ -52,6 +52,7 @@ public class DASHPlayer implements Runnable{
 		int bitrateUp = 0;
 		int bitrateDown = 0;
 		int timeouts = 0;
+		int md5sumsFail = 0;
 		int currentBitRate = this.logic.getCurrentRepresentation();
 		long initialTime = System.currentTimeMillis();
 		this.conituinityFailures = 0;
@@ -61,13 +62,15 @@ public class DASHPlayer implements Runnable{
 		while(this.mpd.hasMoreSegments(numberOfSegmentsDownloaded)){
 			String segmentURL = this.mpd.getSpecifSegment(currentBitRate, numberOfSegmentsDownloaded);
 			try {
-				System.out.println("["+this.playerCount+"] Requesting segment "+segmentURL+" currentBitrate = "+currentBitRate+" Up="+bitrateUp+" Down="+bitrateDown+ " timeouts="+timeouts);
+				System.out.println("["+this.playerCount+"] Requesting segment "+segmentURL+" currentBitrate = "+currentBitRate+" Up="+bitrateUp+" Down="+bitrateDown+ " timeouts="+timeouts+ " md5sFails="+md5sumsFail);
 				int calculatedBitrate = this.httpClient.requestSegment(segmentURL, numberOfSegmentsDownloaded,this.playerCount);
 				
 				if(calculatedBitrate == Integer.MIN_VALUE){
+					
+					//This means that a timeout happened
 					timeouts++;
 					
-					calculatedBitrate = this.logic.getLowestRepresentation();
+					calculatedBitrate = this.logic.getLowestRepresentation() - 1;
 					
 					if(this.logic.switchRepresentation(calculatedBitrate)){
 						int newBitRate = this.logic.getCurrentRepresentation();
@@ -79,11 +82,13 @@ public class DASHPlayer implements Runnable{
 						}
 					}
 					
-					synchronized(this){
-						wait( 100 + (int)( Math.random() * 100));
-//						wait(100);
-					}
+					chunkProcessingTime();
+					continue;
+				} else if(calculatedBitrate == (Integer.MIN_VALUE - 1) ){
 					
+					md5sumsFail++;
+					
+					chunkProcessingTime();
 					continue;
 				}
 				
@@ -133,10 +138,7 @@ public class DASHPlayer implements Runnable{
 				numberOfSegmentsDownloaded++;
 				currentBitRate = this.logic.getCurrentRepresentation();
 				
-				synchronized(this){
-					wait( 100 + (int)( Math.random() * 100));
-//					wait(100);
-				}
+				chunkProcessingTime();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -146,6 +148,16 @@ public class DASHPlayer implements Runnable{
 				e.printStackTrace();
 			}
 			
+		}
+	}
+
+	private void chunkProcessingTime() throws InterruptedException {
+		//Wait time simulating some process (for instance video playback) 
+		//made with the downloaded chunk
+		
+		synchronized(this){
+			wait( 100 + (int)( Math.random() * 100));
+//						wait(100);
 		}
 	}
 

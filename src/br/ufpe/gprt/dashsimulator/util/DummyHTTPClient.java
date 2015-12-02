@@ -51,7 +51,7 @@ public class DummyHTTPClient {
 		try{
 //			long beforeNormal = System.currentTimeMillis();
 //
-//			normalStreamDocumentDownload(data, siteAddress, startTime);
+			normalStreamDocumentDownload(data, siteAddress, startTime);
 			
 //			long afterNormal = System.currentTimeMillis();
 //			
@@ -67,7 +67,7 @@ public class DummyHTTPClient {
 			
 			//	New IO java download
 //			long beforeNewIo = System.currentTimeMillis();
-			newIOJavaDocumentDownload(data, siteAddress, startTime);
+//			newIOJavaDocumentDownload(data, siteAddress, startTime);
 //			long afterNewIo = System.currentTimeMillis();
 //			
 //			System.out.println(evaluateTime(beforeNewIo, afterNewIo, "NewIo", checkFileIntegrity(url, id, playerCount, data)));

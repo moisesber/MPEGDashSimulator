@@ -97,6 +97,7 @@ public class DummyHTTPClient {
 			System.out.println("["+playerCount+"] Md5 checksum OK for "+id+" url "+url);
 		} else {
 			System.out.println("["+playerCount+"] Md5 checksum FAIL for "+id+" url "+url);
+			return Integer.MIN_VALUE - 1;
 		}
 		
 		int bitrate = this.bitrateCalculator.stopTrackingAndCalculateBitrate(id, this.getDownloadedSizeInBytes());
